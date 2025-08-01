@@ -10,4 +10,3 @@
 > ts-http-server@1.0.0 start
 > node dist/index.js
 
-[NON-OK] GET /metrics/1 - Status: 404

@@ -1,17 +1,16 @@
 import express, { NextFunction, Request, Response } from "express";
 import { middlewareLogResponses } from "./api/middleware.js";
-import { incFileserverHits, getFileserverHits } from "./config.js";
+import { config } from "./config.js";
 
 const app = express();
 const PORT = 8080;
 
 const middlewareMetrics = (_req: Request, _res: Response, next: NextFunction) => {
-	incFileserverHits();
+	config.fileserverHits++;
 	next();
 }
-app.use(middlewareMetrics);
 app.use(middlewareLogResponses);
-app.use("/app", express.static("./src/app"));
+app.use(middlewareMetrics);
 
 const handlerReadiness = async (req: Request, res: Response): Promise<void> => {
 	res.set("Content-Type", "text/plain");
@@ -21,10 +20,19 @@ const handlerReadiness = async (req: Request, res: Response): Promise<void> => {
 app.get("/healthz", handlerReadiness);
 
 const handlerGetMetrics = async (req: Request, res: Response): Promise<void> => {
+	config.fileserverHits--;
 	res.set("Content-Type", "text/plain");
 	res.status(200);
-	res.send(`Hits: ${getFileserverHits()}`);
+	res.send(`Hits: ${config.fileserverHits}`);
 }
 app.get("/metrics", handlerGetMetrics);
 
+const handlerResetMetrics = async (req: Request, res: Response): Promise<void> => {
+	config.fileserverHits = 0;
+	res.status(200);
+	res.end();
+}
+app.get("/reset", handlerResetMetrics);
+
+app.use("/app", express.static("./src/app"));
 app.listen(PORT);
