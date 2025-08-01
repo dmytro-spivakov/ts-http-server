@@ -3,6 +3,7 @@ import { middlewareLogResponses, middlewareMetricsInc } from "./api/middleware.j
 import { handlerReadiness } from "./api/readiness.js";
 import { handlerGetMetrics } from "./api/admin/metrics.js";
 import { handlerResetMetrics } from "./api/admin/reset.js";
+import { handlerValidateChirp } from "./api/validate-chirp.js";
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -24,5 +25,7 @@ app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerGetMetrics);
 app.post("/admin/reset", handlerResetMetrics);
+
+app.post("/api/validate_chirp", handlerValidateChirp);
 
 app.listen(PORT);
