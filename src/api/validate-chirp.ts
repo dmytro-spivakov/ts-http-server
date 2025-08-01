@@ -17,6 +17,26 @@ export async function handlerValidateChirp(req: Request, res: Response) {
 		return;
 	}
 
-	respondWithJSON(res, 200, { valid: true });
+	respondWithJSON(res, 200, {
+		cleanedBody: cleanBody(params.body)
+	});
 };
 
+function cleanBody(raw: string): string {
+	const bannedWords = [
+		"kerfuffle",
+		"sharbert",
+		"fornax"
+	];
+	const bannedWordReplacement = "****";
+
+	const words = raw.split(" ");
+	words.forEach((word, idx) => {
+		const lcWord = word.toLowerCase();
+		if (bannedWords.includes(lcWord)) {
+			words[idx] = bannedWordReplacement;
+		}
+	});
+
+	return words.join(" ");
+}
