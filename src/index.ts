@@ -26,6 +26,6 @@ app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerGetMetrics);
 app.post("/admin/reset", handlerResetMetrics);
 
-app.post("/api/validate_chirp", handlerValidateChirp);
+app.post("/api/validate_chirp", express.json(), handlerValidateChirp);
 
 app.listen(PORT);

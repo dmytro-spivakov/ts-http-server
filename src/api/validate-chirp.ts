@@ -6,32 +6,17 @@ export async function handlerValidateChirp(req: Request, res: Response) {
 		body: string;
 	};
 
-	let body = "";
+	let params: parameters = req.body;
 
-	req.on("data", (chunk) => {
-		body += chunk;
-	});
+	if (!params.body || typeof params.body !== "string") {
+		respondWithError(res, 400, "Something went wrong");
+		return;
+	}
+	if (params.body.length > 140) {
+		respondWithError(res, 400, "Chirp is too long");
+		return;
+	}
 
-	let params: parameters;
-	req.on("end", () => {
-		try {
-			params = JSON.parse(body);
-		} catch (_e) {
-			respondWithError(res, 400, "Something went wrong");
-			return;
-		}
-
-		const paramsBody = params.body;
-		if (!paramsBody) {
-			respondWithError(res, 400, "Something went wrong");
-			return;
-		}
-		if (paramsBody.length > 140) {
-			respondWithError(res, 400, "Chirp is too long");
-			return;
-		}
-
-		respondWithJSON(res, 200, { valid: true });
-	});
+	respondWithJSON(res, 200, { valid: true });
 };
 
