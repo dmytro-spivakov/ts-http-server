@@ -23,6 +23,6 @@ app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerGetMetrics);
-app.get("/admin/reset", handlerResetMetrics);
+app.post("/admin/reset", handlerResetMetrics);
 
 app.listen(PORT);
