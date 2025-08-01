@@ -10,5 +10,4 @@
 > ts-http-server@1.0.0 start
 > node dist/index.js
 
-[NON-OK] GET / - Status: 200
-[NON-OK] GET /non-existent-path - Status: 404
+[NON-OK] GET /metrics/1 - Status: 404
