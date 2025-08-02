@@ -13,8 +13,7 @@ export async function handlerValidateChirp(req: Request, res: Response) {
 		return;
 	}
 	if (params.body.length > 140) {
-		respondWithError(res, 400, "Chirp is too long");
-		return;
+		throw new Error("Chirp is too long");
 	}
 
 	respondWithJSON(res, 200, {
