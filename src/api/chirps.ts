@@ -1,17 +1,22 @@
 import { Request, Response } from "express";
-import { respondWithJSON, respondWithError } from "./json.js";
+import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "./errors.js";
+import { createChrip } from "../db/queries/chirps.js";
 
-export async function handlerValidateChirp(req: Request, res: Response) {
+export async function handlerCreateChirp(req: Request, res: Response) {
 	type parameters = {
 		body: string;
+		userId: string;
 	};
 
 	let params: parameters = req.body;
 
-	if (!params.body || typeof params.body !== "string") {
-		respondWithError(res, 400, "Something went wrong");
-		return;
+	if (!params.body || !params.userId) {
+		throw new BadRequestError("Missing required field");
+	}
+
+	if (typeof params.body !== "string" || typeof params.userId !== "string") {
+		throw new BadRequestError("One or more invalid params");
 	}
 
 	const maxMsgLength = 140;
@@ -19,9 +24,13 @@ export async function handlerValidateChirp(req: Request, res: Response) {
 		throw new BadRequestError(`Chirp is too long. Max length is ${maxMsgLength}`);
 	}
 
-	respondWithJSON(res, 200, {
-		cleanedBody: cleanBody(params.body)
-	});
+	const newChirp = createChrip(params);
+	if (!newChirp) {
+		throw new Error("Could not create Chrip");
+	}
+
+
+	respondWithJSON(res, 201, newChirp);
 };
 
 function cleanBody(raw: string): string {
