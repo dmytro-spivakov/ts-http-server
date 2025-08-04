@@ -24,11 +24,10 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 		throw new BadRequestError(`Chirp is too long. Max length is ${maxMsgLength}`);
 	}
 
-	const newChirp = createChrip(params);
+	const newChirp = await createChrip(params);
 	if (!newChirp) {
 		throw new Error("Could not create Chrip");
 	}
-
 
 	respondWithJSON(res, 201, newChirp);
 };
