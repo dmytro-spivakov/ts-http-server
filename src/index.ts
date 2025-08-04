@@ -1,9 +1,14 @@
 import express from "express";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { middlewareLogResponses, middlewareMetricsInc, errorHandler } from "./api/middleware.js";
 import { handlerReadiness } from "./api/readiness.js";
 import { handlerGetMetrics } from "./api/admin/metrics.js";
 import { handlerResetMetrics } from "./api/admin/reset.js";
 import { handlerValidateChirp } from "./api/validate-chirp.js";
+
+import { config } from "./config.js";
 
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
@@ -13,6 +18,10 @@ const __dirname = dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const SRC_ROOT = path.join(PROJECT_ROOT, 'src');
 const VIEWS_ROOT = path.join(SRC_ROOT, "app", "views");
+
+// automatic migrations
+const migrationClient = postgres(config.db.url, { max: 1 });
+await migrate(drizzle(migrationClient), config.db.migrationConfig);
 
 const app = express();
 app.set("view engine", "ejs");
