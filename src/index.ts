@@ -6,7 +6,7 @@ import { middlewareLogResponses, middlewareMetricsInc, errorHandler } from "./ap
 import { handlerReadiness } from "./api/readiness.js";
 import { handlerGetMetrics } from "./api/admin/metrics.js";
 import { handlerResetMetrics } from "./api/admin/reset.js";
-import { handlerCreateChirp, handlerGetAllChirps } from "./api/chirps.js";
+import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp } from "./api/chirps.js";
 import { handlerCreateUser } from "./api/users.js";
 
 import { config } from "./config.js";
@@ -34,21 +34,32 @@ app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.use(express.json());
 
 // routes
+
+// healthcheck
 app.get("/api/healthz", (req, res, next) => {
 	Promise.resolve(handlerReadiness(req, res)).catch(next);
 });
+
+// admin
 app.get("/admin/metrics", (req, res, next) => {
 	Promise.resolve(handlerGetMetrics(req, res)).catch(next);
 });
 app.post("/admin/reset", (req, res, next) => {
 	Promise.resolve(handlerResetMetrics(req, res)).catch(next)
 });
+
+// chirps
 app.post("/api/chirps", (req, res, next) => {
 	Promise.resolve(handlerCreateChirp(req, res)).catch(next);
 });
 app.get("/api/chirps", (req, res, next) => {
 	Promise.resolve(handlerGetAllChirps(req, res)).catch(next);
 });
+app.get("/api/chirps/:chirpID", (req, res, next) => {
+	Promise.resolve(handlerGetChirp(req, res)).catch(next);
+});
+
+// users
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(handlerCreateUser(req, res)).catch(next);
 });
