@@ -7,7 +7,7 @@ import { handlerReadiness } from "./api/readiness.js";
 import { handlerGetMetrics } from "./api/admin/metrics.js";
 import { handlerResetMetrics } from "./api/admin/reset.js";
 import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp } from "./api/chirps.js";
-import { handlerCreateUser } from "./api/users.js";
+import { handlerCreateUser, handlerLogin } from "./api/users.js";
 
 import { config } from "./config.js";
 
@@ -62,6 +62,9 @@ app.get("/api/chirps/:chirpID", (req, res, next) => {
 // users
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(handlerCreateUser(req, res)).catch(next);
+});
+app.post("/api/login", (req, res, next) => {
+	Promise.resolve(handlerLogin(req, res)).catch(next);
 });
 
 // err handling
