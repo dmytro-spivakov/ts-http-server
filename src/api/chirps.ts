@@ -8,6 +8,7 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 		body: string;
 		userId: string;
 	};
+	const maxMsgLength = 140;
 
 	let params: parameters = req.body;
 
@@ -19,12 +20,12 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 		throw new BadRequestError("One or more invalid params");
 	}
 
-	const maxMsgLength = 140;
 	if (params.body.length > maxMsgLength) {
 		throw new BadRequestError(`Chirp is too long. Max length is ${maxMsgLength}`);
 	}
 
-	const newChirp = await createChrip(params);
+	const cleaned = cleanedBody(params.body);
+	const newChirp = await createChrip({ userId: params.userId, body: cleaned });
 	if (!newChirp) {
 		throw new Error("Could not create Chrip");
 	}
@@ -32,7 +33,7 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 	respondWithJSON(res, 201, newChirp);
 };
 
-function cleanBody(raw: string): string {
+function cleanedBody(raw: string): string {
 	const bannedWords = [
 		"kerfuffle",
 		"sharbert",
