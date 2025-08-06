@@ -5,7 +5,7 @@ import { BadRequestError, UnauthorizedError } from "./errors.js";
 import { hashPassword, checkPasswordHash } from "./auth.js";
 import { User } from "../db/schema.js";
 
-type SanitizedUser = Omit<User, "hashedPassword">;
+type UserResponse = Omit<User, "hashedPassword">;
 
 export async function handlerCreateUser(req: Request, res: Response) {
 	type parameters = {
@@ -56,7 +56,7 @@ export async function handlerLogin(req: Request, res: Response) {
 	respondWithJSON(res, 200, sanitized);
 };
 
-function sanitizeUser(user: User): SanitizedUser {
+function sanitizeUser(user: User): UserResponse {
 	const { hashedPassword, ...sanitizedUser } = { ...user };
 	return sanitizedUser;
 }
