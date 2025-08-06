@@ -24,3 +24,4 @@ export const chirps = pgTable("chirps", {
 });
 
 export type NewChirp = typeof chirps.$inferInsert;
+export type Chirp = Required<NewChirp>;

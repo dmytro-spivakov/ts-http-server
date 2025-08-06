@@ -6,7 +6,7 @@ import { middlewareLogResponses, middlewareMetricsInc, errorHandler } from "./ap
 import { handlerReadiness } from "./api/readiness.js";
 import { handlerGetMetrics } from "./api/admin/metrics.js";
 import { handlerResetMetrics } from "./api/admin/reset.js";
-import { handlerCreateChirp } from "./api/chirps.js";
+import { handlerCreateChirp, handlerGetAllChirps } from "./api/chirps.js";
 import { handlerCreateUser } from "./api/users.js";
 
 import { config } from "./config.js";
@@ -45,6 +45,9 @@ app.post("/admin/reset", (req, res, next) => {
 });
 app.post("/api/chirps", (req, res, next) => {
 	Promise.resolve(handlerCreateChirp(req, res)).catch(next);
+});
+app.get("/api/chirps", (req, res, next) => {
+	Promise.resolve(handlerGetAllChirps(req, res)).catch(next);
 });
 app.post("/api/users", (req, res, next) => {
 	Promise.resolve(handlerCreateUser(req, res)).catch(next);
