@@ -8,8 +8,9 @@ type DBConfig = {
 }
 
 type APIConfig = {
-	fileserverHits: number;
 	platform: string;
+	secret: string;
+	fileserverHits: number;
 }
 
 type Config = {
@@ -26,6 +27,7 @@ const config: Config = {
 	},
 	api: {
 		platform: envOrThrow("PLATFORM"),
+		secret: envOrThrow("SECRET"),
 		fileserverHits: 0,
 	}
 }
