@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt"
-import { JwtPayload, Jwt, sign, verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import type { JwtPayload, Jwt } from "jsonwebtoken";
 
 // password
 export function hashPassword(password: string): string {
@@ -25,13 +26,13 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
 		exp: iat + expiresIn,
 	};
 
-	const jwt = sign(jwtPayload, secret);
-	console.log(`JWT = ${jwt}`);
-	return jwt;
+	const token = jwt.sign(jwtPayload, secret);
+	console.log(`JWT = ${token}`);
+	return token;
 }
 
 export function validateJWT(tokenString: string, secret: string): string {
-	const decodedJWT = verify(tokenString, secret, { complete: true }) as Jwt;
+	const decodedJWT = jwt.verify(tokenString, secret, { complete: true }) as Jwt;
 
 	let userID;
 	try {

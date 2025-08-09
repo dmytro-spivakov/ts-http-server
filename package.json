@@ -10,6 +10,7 @@
     "dev": "npm run build && npm run start",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
+    "debug": "npm run build && node --inspect dist/index.js",
     "test": "vitest --run"
   },
   "keywords": [],
