@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken";
+import { UnauthorizedError } from "./errors";
 import type { JwtPayload, Jwt } from "jsonwebtoken";
+
+const TOKEN_ISSUER = "chirpy";
 
 // password
 export function hashPassword(password: string): string {
@@ -15,11 +18,11 @@ export function checkPasswordHash(password: string, hash: string): boolean {
 }
 
 // jwt
-export function makeJWT(userID: string, expiresIn: number, secret: string): string {
-	type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
+type Payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
 
+export function makeJWT(userID: string, expiresIn: number, secret: string): string {
 	const iat = Math.floor(Date.now() / 1000);
-	const jwtPayload: payload = {
+	const jwtPayload: Payload = {
 		iss: "chirpy",
 		sub: userID,
 		iat: iat,
@@ -32,17 +35,26 @@ export function makeJWT(userID: string, expiresIn: number, secret: string): stri
 }
 
 export function validateJWT(tokenString: string, secret: string): string {
-	const decodedJWT = jwt.verify(tokenString, secret, { complete: true }) as Jwt;
-
-	let userID;
+	let decoded;
 	try {
-		userID = decodedJWT.payload.sub;
+		decoded = jwt.verify(tokenString, secret, { complete: true }) as Jwt;
 	} catch (err) {
-		console.log(`Failed to validate JWT ${tokenString}, decodedJWT=${JSON.stringify(decodedJWT)}`);
-	}
-	if (!userID || typeof userID !== "string") {
-		throw new Error(`Failed to validate JWT ${tokenString}, userID=${userID}, decodedJWT=${JSON.stringify(decodedJWT)}`);
+		if (err instanceof Error) {
+			throw new UnauthorizedError(`Invalid token - ${err.message}`);
+		} else {
+			throw new UnauthorizedError("Invalid token");
+		}
 	}
 
+	let payload = decoded.payload as JwtPayload;
+
+	if (payload.iss != TOKEN_ISSUER) {
+		throw new UnauthorizedError("Invalid token issuer");
+	}
+
+	const userID = payload.sub;
+	if (!userID || typeof userID !== "string") {
+		throw new UnauthorizedError("Token must contain valid userID");
+	}
 	return userID;
 }

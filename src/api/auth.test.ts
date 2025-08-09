@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { hashPassword, checkPasswordHash, makeJWT, validateJWT } from "./auth.js";
 import { config } from "../config.js";
-import { TokenExpiredError } from "jsonwebtoken";
+import { UnauthorizedError } from "./errors.js";
 
 describe("Password Hashing", () => {
 	const password1 = "correctPassword123!";
@@ -33,6 +33,7 @@ describe("JWT issuing and verification", () => {
 		const userID: string = "apples";
 		const jwt = makeJWT(userID, -1_000, config.api.secret);
 
-		expect(() => validateJWT(jwt, config.api.secret)).toThrowError(TokenExpiredError);
+		const expectedError = new UnauthorizedError("Invalid token - jwt expired");
+		expect(() => validateJWT(jwt, config.api.secret)).toThrowError(expectedError);
 	});
 });
